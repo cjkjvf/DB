@@ -54,3 +54,69 @@ WHERE units_in_stock < units_on_order
 GROUP BY category_id
 HAVING COUNT(*) > 1
 ORDER BY COUNT(*) ASC;
+
+/*Task 6
+We have a table Orders. 
+We want to show the number of orders (NumberOfOrders) and the average Freight (AverageFreight) shipped to any Latin American country. But we don’t have a list of Latin American countries in a table in the Northwind database. So, we’re going to just use this list of Latin American countries that happen to be in the Orders table: Brazil, Mexico, Argentina, and Venezuela.
+The value AverageFreight should be rounded to the 2nd digit after the decimal point.
+Use column with the alias NumberOfOrders for sorting in ascending order.
+Note. You need to use ROUND(<value>, 2) function for average result.
+The answer for this problem builds on multiple concepts, such as grouping, aggregate functions, and aliases.*/
+
+SELECT ship_country, COUNT(*) AS "NumberOfOrders", ROUND(AVG(freight)::numeric, 2) AS "AverageFreight"
+FROM orders
+WHERE ship_country IN ('Brazil', 'Mexico', 'Argentina', 'Venezuela')
+GROUP BY ship_country
+ORDER BY COUNT(*) ASC;
+
+/*Task 7
+We have a table "Order Details". 
+Create a report about the total sum (TotalOrder) of each order, where the discount was used. Use the expression UnitPrice * Quantity * (1 - Discount). 
+The value TotalOrder should be rounded to the 2nd digit after the decimal point. Use this column for sorting in descending order.
+The result should contain only the rows with TotalOrder greater than 5000.
+Note. You need to use ROUND(<value>, 2) function for the sum result. 
+The answer to this problem builds on multiple concepts, such as grouping, aggregate functions, and aliases.*/
+
+SELECT oder_id, ROUND(CAST(SUM(unit_price*quantity*(1-discount)) AS numeric), 2) AS total_order
+FROM order_details
+WHERE discount > 0
+GROUP BY order_id
+HAVING ROUND(CAST(SUM(unit_price*quantity*(1-discount)) AS numeric), 2) > 5000
+ORDER BY total_order DESC;
+
+/*Task 8
+We have a table Orders. 
+Create a report about the total sum of Freight (TotalFreight) shipped by every employee within each specified year of order (OrderYear).
+Show the result only for TotalFreight greater than 2000.
+The result should be sorted by OrderYear and EmployeeID both ascending.
+Note. You need to use function strftime('%Y', OrderDate) to extract year from date. 
+The answer to this problem builds on multiple concepts, such as grouping, aggregate functions, and aliases.*/
+
+SELECT employee_id, ROUND(SUM(freight)::numeric, 2) AS total_freight, EXTRACT(YEAR FROM order_date)  AS order_year
+FROM orders
+GROUP BY employee_id, order_year
+HAVING  ROUND(SUM(freight)::numeric, 2) > 2000
+ORDER BY order_year, employee_id
+
+/*Task 9
+We have a table Orders. 
+Create a report that shows EmployeeID and the total number of late orders (NumberOfDelayedOrders) for each of them. The condition of late orders is RequiredDate less than ShippedDate.
+The result should be sorted by NumberOfDelayedOrders descending.
+Note. The answer to this problem builds on multiple concepts, such as grouping, aggregate functions, and aliases.*/
+
+SELECT employee_id, COUNT(order_id) AS "NumberOfDelayedOrders" 
+FROM orders
+WHERE required_date < shipped_date
+GROUP BY employee_id
+ORDER BY "NumberOfDelayedOrders" DESC;
+
+/*Task 10
+
+We have a table Employees. 
+Create a report that displays the number of female and male employees (NumberOfEmployees) in the positions they held.
+Note. Use the values of columns Title and TitleOfCourtesy.
+The answer to this problem builds on multiple concepts, such as grouping, aggregate functions, and aliases.*/
+
+SELECT COUNT(title_of_courtesy) AS "NumberOfEmployees", title
+FROM employees
+GROUP BY title_of_courtesy, title
