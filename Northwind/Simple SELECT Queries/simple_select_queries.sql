@@ -77,7 +77,7 @@ The result should contain only the rows with TotalOrder greater than 5000.
 Note. You need to use ROUND(<value>, 2) function for the sum result. 
 The answer to this problem builds on multiple concepts, such as grouping, aggregate functions, and aliases.*/
 
-SELECT oder_id, ROUND(CAST(SUM(unit_price*quantity*(1-discount)) AS numeric), 2) AS total_order
+SELECT order_id, ROUND(CAST(SUM(unit_price*quantity*(1-discount)) AS numeric), 2) AS total_order
 FROM order_details
 WHERE discount > 0
 GROUP BY order_id
